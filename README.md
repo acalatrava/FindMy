@@ -18,6 +18,23 @@ git clone https://github.com/Dadoum/anisette-v3-server
 sqlite3 reports.db 'CREATE TABLE reports (id_short TEXT, timestamp INTEGER, datePublished INTEGER, payload TEXT, id TEXT, statusCode INTEGER, PRIMARY KEY(id_short,timestamp))'
 ```
 
+## Prerequisites
+
+Before running the application, make sure you have the following prerequisites:
+
+1. Create a virtual environment and activate it:
+
+    ```bash
+    python3 -m venv .venv
+    source .venv/bin/activate
+    ```
+
+2. Install dependencies:
+
+    ```bash
+    pip3 install -r requirements.txt
+    ```
+
 ## Run
 1. `cd` into the `FindMy` directory and generate keys using `./generate_keys.py`.
 2. Deploy your advertisement keys on devices supported by OpenHaystack. The ESP32 firmware is a mirror of the OpenHaystack binary, the Lenze 17H66 is found in many 1$ tags obtained from Ali.
@@ -37,3 +54,13 @@ The script should pick up the python bindings to provision and use that instead.
 
 This current non-Mac workflow is not optimal yet, mainly because the anisette server is a bit of a workaround. A python solution for retrieving this is being
 developed in the pypush discord, please join there if you want to contribute!
+
+## Generate firmware for C2 tags
+
+In order to generate the firmware to flash into C2 tags using DFU you need the following components:
+ - `dist/tag_base_firmware.bin` file with the base firmware (already included in this repo)
+ - `dist/private.key` the private key used to sign the DFU packages
+
+Once you have both files you can use the `./generate_firmwares.py` script to generate the DFU zip files for the tags. If you don't specify any parameters it will generate all the firmware for all the `.keys` files in the current path. You can also generate only one firmware by specifying it's name like `./generate_firmwares.py -p jd83js`
+
+Then copy the ZIP files to your iPhone or Android and using `nRF Connect` app connect to the tag, select DFU mode and upload the ZIP file. If everything is successful the tag will flash 3 times and start transmitting the advertising key.

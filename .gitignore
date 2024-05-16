@@ -1,0 +1,6 @@
+.venv
+__pycache__
+dist/private.key
+*.keys
+*.zip
+.DS_Store
