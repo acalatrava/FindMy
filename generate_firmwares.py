@@ -15,7 +15,7 @@ from cryptography.hazmat.primitives.asymmetric.utils import decode_dss_signature
 
 
 def patch_firmware(hashed_adv):
-    firmware_path = "dist/tag_base_firmware.bin"
+    firmware_path = "dist/placemate_m1_base_firmware.bin"
     if not os.path.exists(firmware_path):
         raise FileNotFoundError("Firmware file not found")
 
@@ -40,7 +40,7 @@ def generate_dfu_package(hashed_adv, name):
     # Now generate the initPacket
     init_packet_header = bytes([0x12, 0x8a, 0x01, 0x0a, 0x44, 0x08, 0x01, 0x12, 0x40])
     signed_init_packet = bytearray([0x08, 0x01, 0x10, 0x34, 0x1a, 0x02, 0x83, 0x02, 0x20, 0x00, 0x28,
-                                    0x00, 0x30, 0x00, 0x38, 0x98, 0x9e, 0x03, 0x42, 0x24, 0x08, 0x03, 0x12, 0x20])
+                                    0x00, 0x30, 0x00, 0x38, 0xd8, 0x95, 0x03, 0x42, 0x24, 0x08, 0x03, 0x12, 0x20])
 
     # SHA256 of the patchedFirmware
     sha256_firmware = hashlib.sha256(patched_firmware).digest()

@@ -55,10 +55,10 @@ The script should pick up the python bindings to provision and use that instead.
 This current non-Mac workflow is not optimal yet, mainly because the anisette server is a bit of a workaround. A python solution for retrieving this is being
 developed in the pypush discord, please join there if you want to contribute!
 
-## Generate firmware for C2 tags
+## Generate firmware for M1 tags
 
 In order to generate the firmware to flash into C2 tags using DFU you need the following components:
- - `dist/tag_base_firmware.bin` file with the base firmware (already included in this repo)
+ - `dist/placemate_m1_base_firmware.bin` file with the base/unprogrammed firmware (already included in this repo)
  - `dist/private.key` the private key used to sign the DFU packages
 
 Once you have both files you can use the `./generate_firmwares.py` script to generate the DFU zip files for the tags. If you don't specify any parameters it will generate all the firmware for all the `.keys` files in the current path. You can also generate only one firmware by specifying it's name like `./generate_firmwares.py -p jd83js`
