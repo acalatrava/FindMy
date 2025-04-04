@@ -64,3 +64,18 @@ In order to generate the firmware to flash into C2 tags using DFU you need the f
 Once you have both files you can use the `./generate_firmwares.py` script to generate the DFU zip files for the tags. If you don't specify any parameters it will generate all the firmware for all the `.keys` files in the current path. You can also generate only one firmware by specifying it's name like `./generate_firmwares.py -p jd83js`
 
 Then copy the ZIP files to your iPhone or Android and using `nRF Connect` app connect to the tag, select DFU mode and upload the ZIP file. If everything is successful the tag will flash 3 times and start transmitting the advertising key.
+
+## Specifing advertising interval
+
+In order to specify the advertising interval, please use the `-i`  parameter followed by the interval in milliseconds, like:
+
+```
+./generate_firmwares.py -i [INTERVAL]
+```
+
+Valid intervals are:
+ - 1000 (1 sec)
+ - 2000 (2 sec)
+ - 3000 (3 sec)
+ - 5000 (5 sec)
+ - 10000 (10 sec)
