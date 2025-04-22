@@ -14,7 +14,7 @@ import zipfile
 from cryptography.hazmat.primitives.asymmetric.utils import decode_dss_signature
 
 
-def patch_firmware(hashed_adv, interval):
+def patch_firmware(hashed_adv, interval, name):
     firmware_path = "dist/tag_base_firmware.bin"
     if not os.path.exists(firmware_path):
         raise FileNotFoundError("Firmware file not found")
@@ -22,11 +22,13 @@ def patch_firmware(hashed_adv, interval):
     with open(firmware_path, 'rb') as f:
         firmware = f.read()
 
+    # Replace hashed_adv
     pattern = b"OFFLINEFINDINGPUBLICKEYHERE!"
     public_key = base64.b64decode(hashed_adv)
 
     patched_firmware = firmware.replace(pattern, public_key)
 
+    # Replace interval
     pattern_interval = b"INTX"
     interval = int(interval)
     if interval == 1000:
@@ -42,20 +44,30 @@ def patch_firmware(hashed_adv, interval):
     else:
         raise ValueError(f"Invalid interval ({interval}), valid intervals are 1000, 2000, 3000, 5000, 10000")
 
-    # with open("/tmp/firmware.bin", 'wb') as f:
-    #    f.write(patched_firmware)
+    # Replace name
+    pattern_name = b"TAGTAG!"
+
+    # If name is longer than 7 characters, truncate it
+    if len(name) > 7:
+        name = name[:7]
+
+    # If name is shorter than 7 characters, pad it with spaces
+    if len(name) < 7:
+        name = name.ljust(7)
+
+    patched_firmware = patched_firmware.replace(pattern_name, name.encode())
 
     return patched_firmware
 
 
 def generate_dfu_package(hashed_adv, name, interval):
     # First we create the patched firmware
-    patched_firmware = patch_firmware(hashed_adv, interval)
+    patched_firmware = patch_firmware(hashed_adv, interval, name)
 
     # Now generate the initPacket
     init_packet_header = bytes([0x12, 0x8a, 0x01, 0x0a, 0x44, 0x08, 0x01, 0x12, 0x40])
     signed_init_packet = bytearray([0x08, 0x01, 0x10, 0x34, 0x1a, 0x02, 0x83, 0x02, 0x20, 0x00, 0x28,
-                                    0x00, 0x30, 0x00, 0x38, 0xac, 0x9f, 0x03, 0x42, 0x24, 0x08, 0x03, 0x12, 0x20])
+                                    0x00, 0x30, 0x00, 0x38, 0xe4, 0x9f, 0x03, 0x42, 0x24, 0x08, 0x03, 0x12, 0x20])
 
     # SHA256 of the patchedFirmware
     sha256_firmware = hashlib.sha256(patched_firmware).digest()
@@ -154,7 +166,8 @@ if __name__ == "__main__":
                 print(f"Couldn't find adv key in {keyfile}")
 
     for hashed_adv in names:
-        print(f"Generating firmware for {names[hashed_adv]}")
+        name = names[hashed_adv]
+        print(f"Generating firmware for {name}")
 
         # generate firmware
-        generate_dfu_package(hashed_adv, names[hashed_adv], args.interval)
+        generate_dfu_package(hashed_adv, name, args.interval)
